@@ -36,6 +36,13 @@ echo() {
 }
 
 
+# Interrupt handler for skipping the rest of the pipeline if a SIGINT is received.
+sigint_handler() {
+  export HOOKS_CANCELLED=true
+}
+trap sigint_handler SIGINT
+
+
 install() {
     hook_types=(
         "applypatch-msg"
@@ -97,6 +104,10 @@ main() {
             hook_exit_code=0
             for file in "${files[@]}"
             do
+                if [ "$HOOKS_CANCELLED" = true ]; then
+                  echo "Cancelled by user; not running remaining $hook_type scripts."
+                  exit 1
+                fi
                 scriptname=$(basename $file)
                 echo "BEGIN $scriptname"
                 if [[ "${AUTOHOOK_QUIET-}" == '' ]]; then
