@@ -99,10 +99,10 @@ main() {
             do
                 scriptname=$(basename $file)
                 echo "BEGIN $scriptname"
-                if [[ "${AUTOHOOK_DEBUG-}" == '' ]]; then
-                  eval "\"$file\"" &>/dev/null
-                else
+                if [[ "${AUTOHOOK_QUIET-}" == '' ]]; then
                   eval "\"$file\""
+                else
+                  eval "\"$file\"" &>/dev/null
                 fi
                 script_exit_code="$?"
                 if [[ "$script_exit_code" != 0 ]]
