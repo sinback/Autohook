@@ -7,8 +7,32 @@
 # Website:        https://github.com/Autohook/Autohook
 
 
+# ANSI escape codes for colorizing output
+RESTORE_COLOR="\033[0m"
+BLACK="\033[0;30m"
+RED="\033[00;31m"
+GREEN="\033[00;32m"
+YELLOW="\033[00;33m"
+BLUE="\033[00;34m"
+MAGENTA="\033[00;35m"
+PURPLE="\033[00;35m"
+CYAN="\033[00;36m"
+LIGHTGRAY="\033[00;37m"
+LRED="\033[01;31m"
+LGREEN="\033[01;32m"
+LYELLOW="\033[01;33m"
+LBLUE="\033[01;34m"
+LMAGENTA="\033[01;35m"
+LPURPLE="\033[01;35m"
+LCYAN="\033[01;36m"
+WHITE="\033[01;37m"
+BOLD_START=$(tput bold)
+BOLD_END=$(tput sgr0)
+
+
+
 echo() {
-    builtin echo "[Autohook] $@";
+    builtin echo -e "[Autohook] $@";
 }
 
 
@@ -84,12 +108,14 @@ main() {
                 if [[ "$script_exit_code" != 0 ]]
                 then
                   hook_exit_code=$script_exit_code
+                  echo "${RED}${BOLD_START}FINISH $scriptname${BOLD_END}${RESTORE_COLOR}"
+                else
+                  echo "${GREEN}${BOLD_START}FINISH $scriptname${BOLD_END}${RESTORE_COLOR}"
                 fi
-                echo "FINISH $scriptname"
             done
             if [[ $hook_exit_code != 0 ]]
             then
-              echo "A $hook_type script yielded negative exit code $hook_exit_code"
+              echo "${RED}${BOLD_START}A $hook_type script yielded negative exit code $hook_exit_code${BOLD_END}${RESTORE_COLOR}"
               exit $hook_exit_code
             fi
         fi
