@@ -111,9 +111,9 @@ main() {
                 scriptname=$(basename $file)
                 echo "BEGIN $scriptname"
                 if [[ "${AUTOHOOK_QUIET-}" == '' ]]; then
-                  eval "\"$file\""
+                  eval "\"$file\" $@"
                 else
-                  eval "\"$file\"" &>/dev/null
+                  eval "\"$file\" $@" &>/dev/null
                 fi
                 script_exit_code="$?"
                 if [[ "$script_exit_code" != 0 ]]
