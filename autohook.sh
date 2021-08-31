@@ -64,13 +64,18 @@ install() {
         "update"
     )
 
-    repo_root=$(git rev-parse --show-toplevel)
-    hooks_dir="$repo_root/.git/hooks"
-    autohook_linktarget="../../hooks/autohook.sh"
+    # installation directory for git hooks (main repo/submodule agnostic - just ensure the pwd is in
+    # the right project when you call this script)
+    hooks_dir="$(git rev-parse --git-path hooks)"
+    # use python instead of "realpath" from coreutils because OS X doesn't come with coreutils
+    # if you don't have python and have coreutils instead, you can change this ¯\_(ツ)_/¯
+    this_file="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
     for hook_type in "${hook_types[@]}"
     do
         hook_symlink="$hooks_dir/$hook_type"
-        ln -sf $autohook_linktarget $hook_symlink
+        # get the relative path of this script relative to the hook file git calls
+        linktarget=$(python -c "import os; print(os.path.relpath('$this_file', '$hooks_dir'))")
+        ln -sf $linktarget $hook_symlink
     done
 }
 
@@ -86,6 +91,8 @@ main() {
             install
         fi
     else
+        # this repository's root (if you are installing in a submodule, this is the submodule's
+        # root, not the parent module's)
         repo_root=$(git rev-parse --show-toplevel)
         hook_type=$calling_file
         symlinks_dir="$repo_root/hooks/$hook_type"
